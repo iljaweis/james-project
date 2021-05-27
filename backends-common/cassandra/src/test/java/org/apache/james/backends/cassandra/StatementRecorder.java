@@ -42,6 +42,10 @@ public class StatementRecorder {
             return preparedStatementMatching(statement -> statement.preparedStatement().getQueryString().startsWith(statementString));
         }
 
+        static Selector preparedStatementContaining(String pattern) {
+            return preparedStatementMatching(statement -> statement.preparedStatement().getQueryString().contains(pattern));
+        }
+
         private static StatementRecorder.Selector preparedStatementMatching(Predicate<BoundStatement> condition) {
             return statements -> statements.stream()
                 .filter(BoundStatement.class::isInstance)
