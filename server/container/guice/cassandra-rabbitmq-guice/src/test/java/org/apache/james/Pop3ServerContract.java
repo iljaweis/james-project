@@ -158,6 +158,7 @@ public interface Pop3ServerContract {
         List<POP3MessageInfo> pop3MessageInfos2 = ImmutableList.copyOf(pop3Client2.listUniqueIdentifiers());
         assertThat(pop3MessageInfos2).isEmpty();
         pop3Client.disconnect();
+        pop3Client2.disconnect();
     }
 
     @Test
@@ -321,6 +322,7 @@ public interface Pop3ServerContract {
         // Then RSET should cancen the delete
         pop3Client.reset();
         assertThat(ImmutableList.copyOf(pop3Client.listMessages())).hasSize(1);
+        pop3Client.disconnect();
         pop3Client.disconnect();
     }
 
