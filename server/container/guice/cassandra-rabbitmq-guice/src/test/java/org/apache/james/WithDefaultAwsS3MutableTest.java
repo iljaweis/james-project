@@ -27,5 +27,6 @@ public class WithDefaultAwsS3MutableTest implements MailsShouldBeWellReceived, P
     static JamesServerExtension jamesServerExtension = CassandraRabbitMQJamesServerFixture.baseExtensionBuilder()
         .extension(new AwsS3BlobStoreExtension())
         .lifeCycle(JamesServerExtension.Lifecycle.PER_TEST)
+        .overrideServerModule(new POP3ViewProbeModule())
         .build();
 }

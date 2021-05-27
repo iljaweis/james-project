@@ -38,6 +38,8 @@ import org.apache.james.mailbox.model.MessageId;
 import org.apache.james.mailbox.model.MessageResult;
 import org.apache.james.protocols.pop3.mailbox.Mailbox;
 import org.apache.james.protocols.pop3.mailbox.MessageMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.steveash.guavate.Guavate;
 import com.google.common.collect.ImmutableList;
@@ -47,6 +49,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 public class DistributedMailboxAdapter implements Mailbox {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedMailboxAdapter.class);
+
     public static class Factory implements MailboxAdapterFactory {
         private final Pop3MetadataStore metadataStore;
         private final MessageIdManager messageIdManager;
@@ -94,6 +98,9 @@ public class DistributedMailboxAdapter implements Mailbox {
             if (messages.hasNext()) {
                 return messages.next().getFullContent().getInputStream();
             } else {
+                LOGGER.warn("Removing {} from {} POP3 projection for user {} at it is not backed by a MailboxMessage",
+                    uid, mailbox.getId().serialize(), session.getUser().asString());
+                Mono.from(metadataStore.remove(mailbox.getId(), messageId)).block();
                 return null;
             }
         } catch (MailboxException e) {

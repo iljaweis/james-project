@@ -26,12 +26,24 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3MessageInfo;
+import org.apache.james.backends.cassandra.TestingSession;
+import org.apache.james.backends.cassandra.init.SessionWithInitializedTablesFactory;
+import org.apache.james.core.Username;
 import org.apache.james.jmap.JMAPTestingConstants;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.model.MailboxPath;
+import org.apache.james.mailbox.model.MessageId;
+import org.apache.james.modules.MailboxProbeImpl;
 import org.apache.james.modules.protocols.ImapGuiceProbe;
 import org.apache.james.modules.protocols.Pop3GuiceProbe;
 import org.apache.james.modules.protocols.SmtpGuiceProbe;
+import org.apache.james.pop3server.mailbox.CassandraPop3MetadataStore;
+import org.apache.james.pop3server.mailbox.Pop3MetadataStore;
 import org.apache.james.util.ClassLoaderUtils;
 import org.apache.james.utils.DataProbeImpl;
+import org.apache.james.utils.GuiceProbe;
 import org.apache.james.utils.SMTPMessageSender;
 import org.apache.james.utils.SpoolerProbe;
 import org.apache.james.utils.TestIMAPClient;
@@ -43,8 +55,50 @@ import com.github.fge.lambdas.consumers.ThrowingConsumer;
 import com.github.steveash.guavate.Guavate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.CharStreams;
+import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.multibindings.Multibinder;
+
+import reactor.core.publisher.Mono;
 
 public interface Pop3ServerContract {
+    class POP3ViewProbe implements GuiceProbe {
+        private final CassandraPop3MetadataStore pop3MetadataStore;
+        private final MailboxManager mailboxManager;
+        private final MessageId.Factory messageIdFactory;
+
+        @Inject
+        private POP3ViewProbe(CassandraPop3MetadataStore pop3MetadataStore, MailboxManager mailboxManager, MessageId.Factory messageIdFactory) {
+            this.pop3MetadataStore = pop3MetadataStore;
+            this.mailboxManager = mailboxManager;
+            this.messageIdFactory = messageIdFactory;
+        }
+
+        public void insertDandlingMetadata(MailboxPath mailboxPath) throws Exception {
+            MailboxSession session = mailboxManager.createSystemSession(mailboxPath.getUser());
+            MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, session);
+
+            Mono.from(pop3MetadataStore.add(mailbox.getId(), new Pop3MetadataStore.StatMetadata(messageIdFactory.generate(), 128))).block();
+        }
+    }
+
+    class POP3ViewProbeModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            Multibinder.newSetBinder(binder(), GuiceProbe.class)
+                .addBinding()
+                .to(POP3ViewProbe.class);
+        }
+
+        @Provides
+        @Singleton
+        TestingSession provideSession(SessionWithInitializedTablesFactory factory) {
+            return new TestingSession(factory.get());
+        }
+    }
+
     String USER = "bob@examplebis.local";
     String PASSWORD = "123456";
     String DOMAIN = "examplebis.local";
@@ -73,6 +127,36 @@ public interface Pop3ServerContract {
         assertThat(pop3MessageInfos).hasSize(1);
         Reader message = pop3Client.retrieveMessage(pop3MessageInfos.get(0).number);
         assertThat(CharStreams.toString(message)).contains("subject: test\r\n\r\ncontent");
+        pop3Client.disconnect();
+    }
+
+    @Test
+    default void dandlingMetadataShouldBeCleanedUpForFollowingSessions(GuiceJamesServer server) throws Exception {
+        server.getProbe(DataProbeImpl.class).fluent()
+            .addDomain(DOMAIN)
+            .addUser(USER, PASSWORD);
+        MailboxPath inbox = MailboxPath.inbox(Username.of(Pop3ServerContract.USER));
+        server.getProbe(MailboxProbeImpl.class)
+            .createMailbox(inbox);
+
+        // Given a dandling view entry with no backing message
+        server.getProbe(POP3ViewProbe.class)
+            .insertDandlingMetadata(inbox);
+
+        // When I retrieve it a first time it fails
+        POP3Client pop3Client = new POP3Client();
+        pop3Client.connect("127.0.0.1", server.getProbe(Pop3GuiceProbe.class).getPop3Port());
+        pop3Client.login(USER, PASSWORD);
+        List<POP3MessageInfo> pop3MessageInfos = ImmutableList.copyOf(pop3Client.listUniqueIdentifiers());
+        assertThat(pop3MessageInfos).hasSize(1);
+        assertThat(pop3Client.retrieveMessage(pop3MessageInfos.get(0).number)).isNull();
+
+        // Then subsequent POP3 session do not encounter the inconsistency
+        POP3Client pop3Client2 = new POP3Client();
+        pop3Client2.connect("127.0.0.1", server.getProbe(Pop3GuiceProbe.class).getPop3Port());
+        pop3Client2.login(USER, PASSWORD);
+        List<POP3MessageInfo> pop3MessageInfos2 = ImmutableList.copyOf(pop3Client2.listUniqueIdentifiers());
+        assertThat(pop3MessageInfos2).isEmpty();
         pop3Client.disconnect();
     }
 
