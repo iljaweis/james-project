@@ -51,8 +51,8 @@ public class MemoryPop3MetadataStore implements Pop3MetadataStore {
     }
 
     @Override
-    public Publisher<Void> remove(MailboxId mailboxId, StatMetadata statMetadata) {
-        return Mono.fromRunnable(() -> data.remove(mailboxId, statMetadata.getMessageId()));
+    public Publisher<Void> remove(MailboxId mailboxId, MessageId messageId) {
+        return Mono.fromRunnable(() -> data.remove(mailboxId, messageId));
     }
 
     @Override

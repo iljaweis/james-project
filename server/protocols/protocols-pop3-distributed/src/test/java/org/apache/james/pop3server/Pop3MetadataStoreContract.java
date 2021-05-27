@@ -90,7 +90,7 @@ public interface Pop3MetadataStoreContract {
         Mono.from(testee().add(mailboxId, metadata1)).block();
         Mono.from(testee().add(mailboxId, metadata2)).block();
 
-        Mono.from(testee().remove(mailboxId, metadata2)).block();
+        Mono.from(testee().remove(mailboxId, metadata2.getMessageId())).block();
 
         assertThat(
             Flux.from(testee()
@@ -144,7 +144,7 @@ public interface Pop3MetadataStoreContract {
     @Test
     default void removeShouldBeIdempotent() {
         StatMetadata metadata1= new StatMetadata(generateMessageId(), SIZE_1);
-        assertThatCode(() -> Mono.from(testee().remove(generateMailboxId(), metadata1)).block())
+        assertThatCode(() -> Mono.from(testee().remove(generateMailboxId(), metadata1.getMessageId())).block())
             .doesNotThrowAnyException();
     }
 }

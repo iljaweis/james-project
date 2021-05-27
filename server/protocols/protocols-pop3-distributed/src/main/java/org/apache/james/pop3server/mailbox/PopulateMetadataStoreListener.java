@@ -82,7 +82,7 @@ public class PopulateMetadataStoreListener implements ReactiveGroupEventListener
     private Publisher<Void> handleExpunged(Expunged expunged) {
         return Flux.fromStream(expunged.getUids().stream()
             .map(expunged::getMetaData))
-            .concatMap(message -> metadataStore.remove(expunged.getMailboxId(), new StatMetadata(message.getMessageId(), message.getSize())))
+            .concatMap(message -> metadataStore.remove(expunged.getMailboxId(), message.getMessageId()))
             .then();
     }
 

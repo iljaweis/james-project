@@ -35,6 +35,7 @@ import org.apache.james.backends.cassandra.utils.CassandraAsyncExecutor;
 import org.apache.james.mailbox.cassandra.ids.CassandraId;
 import org.apache.james.mailbox.cassandra.ids.CassandraMessageId;
 import org.apache.james.mailbox.model.MailboxId;
+import org.apache.james.mailbox.model.MessageId;
 import org.reactivestreams.Publisher;
 
 import com.datastax.driver.core.PreparedStatement;
@@ -106,13 +107,13 @@ public class CassandraPop3MetadataStore implements Pop3MetadataStore {
     }
 
     @Override
-    public Publisher<Void> remove(MailboxId mailboxId, StatMetadata statMetadata) {
+    public Publisher<Void> remove(MailboxId mailboxId, MessageId messageId) {
         CassandraId id = (CassandraId) mailboxId;
-        CassandraMessageId messageId = (CassandraMessageId) statMetadata.getMessageId();
+        CassandraMessageId cassandraMessageId = (CassandraMessageId) messageId;
 
         return executor.executeVoid(remove.bind()
             .setUUID(MAILBOX_ID, id.asUuid())
-            .setUUID(MESSAGE_ID, messageId.get()));
+            .setUUID(MESSAGE_ID, cassandraMessageId.get()));
     }
 
     @Override

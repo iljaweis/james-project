@@ -73,7 +73,7 @@ public interface Pop3MetadataStore {
 
     Publisher<Void> add(MailboxId mailboxId, StatMetadata statMetadata);
 
-    Publisher<Void> remove(MailboxId mailboxId, StatMetadata statMetadata);
+    Publisher<Void> remove(MailboxId mailboxId, MessageId messageId);
 
     Publisher<Void> clear(MailboxId mailboxId);
 }

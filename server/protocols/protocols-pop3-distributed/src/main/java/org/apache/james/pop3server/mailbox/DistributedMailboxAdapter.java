@@ -116,7 +116,11 @@ public class DistributedMailboxAdapter implements Mailbox {
             .map(messageIdFactory::fromString)
             .collect(Guavate.toImmutableList());
         try {
-            Mono.from(messageIdManager.delete(messageIds, session)).block();
+            Mono.from(messageIdManager.delete(messageIds, session))
+                .flatMap(deleteResult -> Flux.fromIterable(deleteResult.getDestroyed())
+                    .flatMap(messageId -> metadataStore.remove(mailbox.getId(), messageId))
+                    .then())
+                .block();
         } catch (MailboxException e) {
             throw new IOException("Unable to delete " + messageIds, e);
         }
