@@ -382,6 +382,7 @@ public interface Pop3ServerContract {
         List<POP3MessageInfo> pop3MessageInfos2 = ImmutableList.copyOf(pop3Client2.listUniqueIdentifiers());
         assertThat(pop3MessageInfos2).hasSize(1);
         pop3Client.disconnect();
+        pop3Client2.disconnect();
     }
 
     @Test
