@@ -111,6 +111,7 @@ public class CassandraRabbitMQJamesServerMain implements JamesServerMain {
         new WebAdminServerModule(),
         new WebAdminReIndexingTaskSerializationModule(),
         new MessagesRoutesModule(),
+        new Pop3FixInconsistenciesWebAdminModule(),
         new WebAdminMailOverWebModule());
 
     public static final Module PROTOCOLS = Modules.combine(

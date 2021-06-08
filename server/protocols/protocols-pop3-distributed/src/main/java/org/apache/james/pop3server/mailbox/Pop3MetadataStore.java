@@ -25,6 +25,8 @@ import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.model.MessageId;
 import org.reactivestreams.Publisher;
 
+import com.google.common.base.MoreObjects;
+
 
 public interface Pop3MetadataStore {
     class StatMetadata {
@@ -69,6 +71,50 @@ public interface Pop3MetadataStore {
         }
     }
 
+    class FullMetadata extends StatMetadata {
+        private final MailboxId mailboxId;
+
+        public FullMetadata(MailboxId mailboxId, MessageId messageId, long size) {
+            super(messageId, size);
+            this.mailboxId = mailboxId;
+        }
+
+        public FullMetadata(MailboxId mailboxId, StatMetadata statMetadata) {
+            super(statMetadata.getMessageId(), statMetadata.getSize());
+            this.mailboxId = mailboxId;
+        }
+
+        public MailboxId getMailboxId() {
+            return mailboxId;
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o instanceof FullMetadata) {
+                FullMetadata that = (FullMetadata) o;
+
+                return this.getSize() == that.getSize()
+                    && Objects.equals(this.getMessageId(), that.getMessageId())
+                    && Objects.equals(this.mailboxId, that.mailboxId);
+            }
+            return false;
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(mailboxId, this.getMessageId(), this.getSize());
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                .add("mailboxId", mailboxId)
+                .add("messageId", this.getMessageId())
+                .add("size", this.getSize())
+                .toString();
+        }
+    }
+
     Publisher<StatMetadata> stat(MailboxId mailboxId);
 
     Publisher<Void> add(MailboxId mailboxId, StatMetadata statMetadata);
@@ -76,4 +122,8 @@ public interface Pop3MetadataStore {
     Publisher<Void> remove(MailboxId mailboxId, MessageId messageId);
 
     Publisher<Void> clear(MailboxId mailboxId);
+
+    Publisher<FullMetadata> listAllEntries();
+
+    Publisher<FullMetadata> retrieve(MailboxId mailboxId, MessageId messageId);
 }

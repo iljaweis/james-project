@@ -29,6 +29,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class MemoryPop3MetadataStore implements Pop3MetadataStore {
@@ -46,6 +47,20 @@ public class MemoryPop3MetadataStore implements Pop3MetadataStore {
     }
 
     @Override
+    public Publisher<FullMetadata> listAllEntries() {
+        return Flux.fromIterable(data.rowKeySet())
+            .flatMap(this::getAllMetaData);
+    }
+
+    @Override
+    public Publisher<FullMetadata> retrieve(MailboxId mailboxId, MessageId messageId) {
+        return Mono.fromCallable(() -> ImmutableList.copyOf(data.row(mailboxId).entrySet()))
+            .flatMapIterable(Function.identity())
+            .filter(entry -> entry.getKey().equals(messageId))
+            .map(entry -> new FullMetadata(mailboxId, entry.getKey(), entry.getValue()));
+    }
+
+    @Override
     public Publisher<Void> add(MailboxId mailboxId, StatMetadata statMetadata) {
         return Mono.fromRunnable(() -> data.put(mailboxId, statMetadata.getMessageId(), statMetadata.getSize()));
     }
@@ -58,5 +73,11 @@ public class MemoryPop3MetadataStore implements Pop3MetadataStore {
     @Override
     public Publisher<Void> clear(MailboxId mailboxId) {
         return Mono.fromRunnable(() -> data.row(mailboxId).clear());
+    }
+
+    private Publisher<FullMetadata> getAllMetaData(MailboxId mailboxId) {
+        return Mono.fromCallable(() -> ImmutableList.copyOf(data.row(mailboxId).entrySet()))
+            .flatMapIterable(Function.identity())
+            .map(entry -> new FullMetadata(mailboxId, entry.getKey(), entry.getValue()));
     }
 }

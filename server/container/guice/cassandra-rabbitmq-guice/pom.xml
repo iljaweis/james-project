@@ -265,6 +265,10 @@
         </dependency>
         <dependency>
             <groupId>${james.groupId}</groupId>
+            <artifactId>james-server-webadmin-pop3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${james.groupId}</groupId>
             <artifactId>james-server-webadmin-rabbitmq</artifactId>
         </dependency>
         <dependency>

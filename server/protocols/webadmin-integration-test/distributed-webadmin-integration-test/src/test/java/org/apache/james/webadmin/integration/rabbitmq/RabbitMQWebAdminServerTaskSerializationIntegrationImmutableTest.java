@@ -120,6 +120,27 @@ class RabbitMQWebAdminServerTaskSerializationIntegrationImmutableTest {
     }
 
     @Test
+    void fixPop3InconsistenciesShouldCompleteWhenNoMail() {
+        String taskId = with()
+            .post("/mailboxes?task=fixPop3Inconsistencies")
+            .jsonPath()
+            .get("taskId");
+
+        given()
+            .basePath(TasksRoutes.BASE)
+        .when()
+            .get(taskId + "/await")
+        .then()
+            .body("status", is("completed"))
+            .body("taskId", is(notNullValue()))
+            .body("type", is("Pop3MetaDataFixInconsistenciesTask"))
+            .body("additionalInformation.processedImapUidEntries", is(0))
+            .body("additionalInformation.processedPop3MetaDataStoreEntries", is(0))
+            .body("additionalInformation.stalePOP3Entries", is(0))
+            .body("additionalInformation.missingPOP3Entries", is(0));
+    }
+
+    @Test
     void clearMailQueueShouldCompleteWhenNoQueryParameters() {
         String firstMailQueue = with()
                 .basePath(MailQueueRoutes.BASE_URL)
