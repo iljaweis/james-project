@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.steveash.guavate.Guavate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -124,7 +125,11 @@ public class DistributedMailboxAdapter implements Mailbox {
             .collect(Guavate.toImmutableList());
 
         Mono.from(messageIdManager.delete(messageIds, session))
-            .flatMap(deleteResult -> Flux.fromIterable(deleteResult.getDestroyed())
+            .flatMap(deleteResult -> Flux.fromIterable(
+                ImmutableSet.<MessageId>builder()
+                    .addAll(deleteResult.getDestroyed())
+                    .addAll(deleteResult.getNotFound())
+                    .build())
                 .flatMap(messageId -> metadataStore.remove(mailbox.getId(), messageId))
                 .then())
             .block();
