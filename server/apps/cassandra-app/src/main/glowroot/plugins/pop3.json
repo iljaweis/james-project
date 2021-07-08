@@ -1,0 +1,214 @@
+{
+  "name": "POP3 Plugin",
+  "id": "pop3",
+  "instrumentation": [
+    {
+      "className": "org.apache.james.protocols.pop3.core.Pop3CommandHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: {{methodName}}",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.AbstractApopCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: APOP",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.AbstractPassCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: PASS",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.CapaCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: CAPA",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.DeleCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: DELE",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.ListCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: LIST",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.NoopCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: NOOP",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.QuitCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: QUIT",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.RetrCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: RETR",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.RsetCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: RSET",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.StatCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: STAT",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.StlsCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: STLS",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.TopCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: TOP",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.UidlCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: UIDL",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+    {
+      "className": "org.apache.james.protocols.pop3.core.UserCmdHandler",
+      "methodName": "onCommand",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Command: USER",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    },
+   {
+      "className": "org.apache.james.protocols.pop3.core.WelcomeMessageHandler",
+      "methodName": "onConnect",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "POP3",
+      "transactionNameTemplate": "POP3 Connect",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "{{this.class.name}}.{{methodName}}",
+      "timerName": "pop3Timer"
+    }
+  ]
+}
