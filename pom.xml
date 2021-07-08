@@ -44,7 +44,7 @@
         update a database, prevent spam, build a message archive, or whatever you can imagine. A matcher determines
         whether your mailet should process an email in the server. The James project hosts the Mailet API, and James
         provides an implementation of this mail application platform API.</description>
-    <url>http://james.apache.org/</url>
+    <url>https://james.apache.org/</url>
     <inceptionYear>2006</inceptionYear>
 
     <developers>
@@ -492,35 +492,35 @@
             <subscribe>server-dev-subscribe@james.apache.org</subscribe>
             <unsubscribe>server-dev-unsubscribe@james.apache.org</unsubscribe>
             <post>server-dev@james.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/james-server-dev/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/james-server-dev/</archive>
         </mailingList>
         <mailingList>
             <name>Server User</name>
             <subscribe>server-user-subscribe@james.apache.org</subscribe>
             <unsubscribe>server-user-unsubscribe@james.apache.org</unsubscribe>
             <post>server-user@james.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/james-server-user/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/james-server-user/</archive>
         </mailingList>
         <mailingList>
             <name>Mime4J</name>
             <subscribe>mime4j-dev-subscribe@james.apache.org</subscribe>
             <unsubscribe>mime4j-dev-unsubscribe@james.apache.org</unsubscribe>
             <post>mime4j-dev@james.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/james-mime4j-dev/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/james-mime4j-dev/</archive>
         </mailingList>
         <mailingList>
             <name>General</name>
             <subscribe>general-subscribe@james.apache.org</subscribe>
             <unsubscribe>general-unsubscribe@james.apache.org</unsubscribe>
             <post>general@james.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/james-general/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/james-general/</archive>
         </mailingList>
         <mailingList>
             <name>Website Development</name>
             <subscribe>site-dev-subscribe@james.apache.org</subscribe>
             <unsubscribe>site-dev-unsubscribe@james.apache.org</unsubscribe>
             <post>site-dev@james.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/james-site-dev/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/james-site-dev/</archive>
         </mailingList>
     </mailingLists>
 
@@ -552,12 +552,12 @@
 
     <issueManagement>
         <system>JIRA</system>
-        <url>http://issues.apache.org/jira/browse/JAMES</url>
+        <url>https://issues.apache.org/jira/browse/JAMES</url>
     </issueManagement>
 
     <ciManagement>
         <system>Jenkins</system>
-        <url>https://builds.apache.org/</url>
+        <url>https://ci-builds.apache.org/job/james/job/ApacheJames/</url>
     </ciManagement>
 
     <distributionManagement>
@@ -591,7 +591,6 @@
         <activemq.version>5.16.1</activemq.version>
         <apache-mime4j.version>0.8.4</apache-mime4j.version>
         <apache.openjpa.version>3.1.2</apache.openjpa.version>
-        <camel.version>3.8.0</camel.version>
         <derby.version>10.14.2.0</derby.version>
         <log4j2.version>2.14.0</log4j2.version>
         <javax.inject.version>1</javax.inject.version>
@@ -1269,28 +1268,23 @@
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-cassandra-guice</artifactId>
+                <artifactId>james-server-cassandra-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-cassandra-guice</artifactId>
+                <artifactId>james-server-cassandra-app</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-cassandra-ldap-guice</artifactId>
+                <artifactId>james-server-cassandra-app-ldap-tests</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-cassandra-rabbitmq-guice</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-cassandra-rabbitmq-guice</artifactId>
+                <artifactId>james-server-cassandra-app-ldap-tests</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
             </dependency>
@@ -1388,6 +1382,17 @@
                 <groupId>${james.groupId}</groupId>
                 <artifactId>james-server-deleted-messages-vault</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${james.groupId}</groupId>
+                <artifactId>james-server-distributed-app</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${james.groupId}</groupId>
+                <artifactId>james-server-distributed-app</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
@@ -1591,7 +1596,7 @@
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-mailetcontainer-camel</artifactId>
+                <artifactId>james-server-mailetcontainer-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -1622,12 +1627,12 @@
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-memory-guice</artifactId>
+                <artifactId>james-server-memory-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${james.groupId}</groupId>
-                <artifactId>james-server-memory-guice</artifactId>
+                <artifactId>james-server-memory-app</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
             </dependency>
@@ -2115,7 +2120,6 @@
                 <artifactId>metrics-elasticsearch-reporter</artifactId>
                 <version>${es-reporter.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
@@ -2161,6 +2165,11 @@
                 <groupId>com.typesafe.play</groupId>
                 <artifactId>play-json_${scala.base}</artifactId>
                 <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.unboundid</groupId>
+                <artifactId>unboundid-ldapsdk</artifactId>
+                <version>6.0.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-beanutils</groupId>
@@ -2382,27 +2391,6 @@
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant-antunit</artifactId>
                 <version>1.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-core</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-spring</artifactId>
-                <version>${camel.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-web</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-support</artifactId>
-                <version>${camel.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -3158,7 +3146,6 @@
                             <exclude>.*/**/*</exclude>
                             <!-- Schemas for offline use -->
                             <exclude>**/META-INF/XSD/activemq-core-*.xsd</exclude>
-                            <exclude>**/META-INF/XSD/camel-spring-*.xsd</exclude>
                             <exclude>**/META-INF/XSD/spring-beans-*.xsd</exclude>
                         </excludes>
                     </configuration>

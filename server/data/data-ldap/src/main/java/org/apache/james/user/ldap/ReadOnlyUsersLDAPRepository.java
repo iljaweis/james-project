@@ -36,7 +36,8 @@ import org.apache.james.user.lib.UsersRepositoryImpl;
  * This repository implementation serves as a bridge between Apache James and
  * LDAP. It allows James to authenticate users against an LDAP compliant server
  * such as Apache DS or Microsoft AD. It also enables role/group based access
- * restriction based on LDAP groups.
+ * restriction based on LDAP groups (role/group based access are experimental
+ * and untested, contributions welcomed).
  * </p>
  * <p>
  * It is intended for organisations that already have a user-authentication and
@@ -64,10 +65,6 @@ import org.apache.james.user.lib.UsersRepositoryImpl;
  *      userBase=&quot;ou=People,o=myorg.com,ou=system&quot;
  *      userIdAttribute=&quot;uid&quot;
  *      userObjectClass=&quot;inetOrgPerson&quot;
- *      maxRetries=&quot;20&quot;
- *      retryStartInterval=&quot;0&quot;
- *      retryMaxInterval=&quot;30&quot;
- *      retryIntervalScale=&quot;1000&quot;
  *      administratorId=&quot;ldapAdmin&quot;
  *  &lt;/users-store&gt;
  * </pre>
@@ -95,57 +92,9 @@ import org.apache.james.user.lib.UsersRepositoryImpl;
  * &quot;user&quot; for Microsoft Active Directory.</li>
  **
  * <li>
- * <b>maxRetries:</b> (optional, default = 0) The maximum number of times to
- * retry a failed operation. -1 means retry forever.</li>
+ * <b>poolSize:</b> (optional, default = 4) The maximum number of connection
+ * in the pool.</li>
  * <li>
- * <b>retryStartInterval:</b> (optional, default = 0) The interval in
- * milliseconds to wait before the first retry. If > 0, subsequent retries are
- * made at double the proceeding one up to the <b>retryMaxInterval</b> described
- * below. If = 0, the next retry is 1 and subsequent retries proceed as above.</li>
- * <li>
- * <b>retryMaxInterval:</b> (optional, default = 60) The maximum interval in
- * milliseconds to wait between retries</li>
- * <li>
- * <b>retryIntervalScale:</b> (optional, default = 1000) The amount by which to
- * multiply each retry interval. The default value of 1000 (milliseconds) is 1
- * second, so the default <b>retryMaxInterval</b> of 60 is 60 seconds, or 1
- * minute.
- * </ul>
- * </p>
- * <p>
- * <em>Example Schedules</em>
- * <ul>
- * <li>
- * Retry after 1000 milliseconds, doubling the interval for each retry up to
- * 30000 milliseconds, subsequent retry intervals are 30000 milliseconds until
- * 10 retries have been attempted, after which the <code>Exception</code>
- * causing the fault is thrown:
- * <ul>
- * <li>maxRetries = 10
- * <li>retryStartInterval = 1000
- * <li>retryMaxInterval = 30000
- * <li>retryIntervalScale = 1
- * </ul>
- * <li>
- * Retry immediately, then retry after 1 * 1000 milliseconds, doubling the
- * interval for each retry up to 30 * 1000 milliseconds, subsequent retry
- * intervals are 30 * 1000 milliseconds until 20 retries have been attempted,
- * after which the <code>Exception</code> causing the fault is thrown:
- * <ul>
- * <li>maxRetries = 20
- * <li>retryStartInterval = 0
- * <li>retryMaxInterval = 30
- * <li>retryIntervalScale = 1000
- * </ul>
- * <li>
- * Retry after 5000 milliseconds, subsequent retry intervals are 5000
- * milliseconds. Retry forever:
- * <ul>
- * <li>maxRetries = -1
- * <li>retryStartInterval = 5000
- * <li>retryMaxInterval = 5000
- * <li>retryIntervalScale = 1
- * </ul>
  * </ul>
  * </p>
  *
@@ -173,24 +122,16 @@ import org.apache.james.user.lib.UsersRepositoryImpl;
  * the &quot;&lt;restriction&gt;&quot; sections.</li>
  * </ul>
  * </p>
+ * <p><b>WARNING</b>: group/role based access restrictions is currently untested and should
+ * be considered experimental. Use at your own risks. Contributions to strengthen that part
+ * of the code base are welcomed.</p>
  *
  * <p>
- * The following parameters may be used to adjust the underlying
- * <code>com.sun.jndi.ldap.LdapCtxFactory</code>. See <a href=
- * "http://docs.oracle.com/javase/1.5.0/docs/guide/jndi/jndi-ldap.html#SPIPROPS"
- * > LDAP Naming Service Provider for the Java Naming and Directory InterfaceTM
- * (JNDI) : Provider-specific Properties</a> for details.
+ * The following parameters may be used to adjust the underlying socket settings:
  * <ul>
+ * <b>connectionTimeout:</b> (optional) Sets the connection timeout on the underlying  to the specified integer value
  * <li>
- * <b>useConnectionPool:</b> (optional, default = true) Sets property
- * <code>com.sun.jndi.ldap.connect.pool</code> to the specified boolean value
- * <li>
- * <b>connectionTimeout:</b> (optional) Sets property
- * <code>com.sun.jndi.ldap.connect.timeout</code> to the specified integer value
- * <li>
- * <b>readTimeout:</b> (optional) Sets property
- * <code>com.sun.jndi.ldap.read.timeout</code> to the specified integer value.
- * Applicable to Java 6 and above.
+ * <b>readTimeout:</b> (optional) Sets property the read timeout to the specified integer value.
  * <li>
  * <b>administratorId:</b> (optional) User identifier of the administrator user.
  * The administrator user is allowed to authenticate as other users.

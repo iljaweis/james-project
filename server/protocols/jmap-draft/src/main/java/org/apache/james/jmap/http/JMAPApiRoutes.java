@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.jmap.http;
 
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.apache.james.jmap.HttpConstants.JSON_CONTENT_TYPE;
@@ -51,6 +52,7 @@ import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 
 import io.netty.handler.codec.http.HttpMethod;
 import reactor.core.publisher.Flux;
@@ -121,14 +123,15 @@ public class JMAPApiRoutes implements JMAPRoutes {
         return responses.collectList()
             .map(objects -> {
                 try {
-                    return objectMapper.writeValueAsString(objects);
+                    return objectMapper.writeValueAsBytes(objects);
                 } catch (JsonProcessingException e) {
                     throw new InternalErrorException("error serialising JMAP API response json");
                 }
             })
             .flatMap(json -> response.status(OK)
                 .header(CONTENT_TYPE, JSON_CONTENT_TYPE)
-                .sendString(Mono.just(json))
+                .header(CONTENT_LENGTH, Integer.toString(json.length))
+                .sendByteArray(Mono.just(json))
                 .then());
     }
 
@@ -141,6 +144,6 @@ public class JMAPApiRoutes implements JMAPRoutes {
                     throw new BadRequestException("Error deserializing JSON", e);
                 }
             })
-            .flatMapMany(Flux::fromArray);
+            .flatMapIterable(ImmutableList::copyOf);
     }
 }

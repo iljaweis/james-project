@@ -47,6 +47,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
+import com.unboundid.ldap.sdk.LDAPException;
+
 class ReadOnlyUsersLDAPRepositoryTest {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ReadOnlyUsersLDAPRepositoryTest.class);
@@ -68,6 +71,69 @@ class ReadOnlyUsersLDAPRepositoryTest {
     @AfterAll
     static void afterAll() {
         ldapContainer.stop();
+    }
+
+    @Test
+    void shouldNotStartWithInvalidFilter() throws Exception {
+        HierarchicalConfiguration<ImmutableNode> configuration = ldapRepositoryConfiguration(ldapContainer);
+        configuration.addProperty("[@filter]", "INVALID!!!");
+
+        ReadOnlyUsersLDAPRepository usersLDAPRepository = new ReadOnlyUsersLDAPRepository(new SimpleDomainList());
+        usersLDAPRepository.configure(configuration);
+
+        assertThatThrownBy(usersLDAPRepository::init)
+            .isInstanceOf(LDAPException.class);
+    }
+
+    @Nested
+    class FilterTests {
+        @Test
+        void filterShouldKeepMatchingEntries() throws Exception {
+            HierarchicalConfiguration<ImmutableNode> configuration = ldapRepositoryConfiguration(ldapContainer);
+            configuration.addProperty("[@filter]", "(sn=james-user)");
+
+            ReadOnlyUsersLDAPRepository usersLDAPRepository = new ReadOnlyUsersLDAPRepository(new SimpleDomainList());
+            usersLDAPRepository.configure(configuration);
+            usersLDAPRepository.init();
+
+            assertThat(usersLDAPRepository.contains(JAMES_USER)).isTrue();
+        }
+
+        @Test
+        void filterShouldFilterOutNonMatchingEntries() throws Exception {
+            HierarchicalConfiguration<ImmutableNode> configuration = ldapRepositoryConfiguration(ldapContainer);
+            configuration.addProperty("[@filter]", "(sn=nomatch)");
+
+            ReadOnlyUsersLDAPRepository usersLDAPRepository = new ReadOnlyUsersLDAPRepository(new SimpleDomainList());
+            usersLDAPRepository.configure(configuration);
+            usersLDAPRepository.init();
+
+            assertThat(usersLDAPRepository.contains(JAMES_USER)).isFalse();
+        }
+
+        @Test
+        void countShouldTakeFilterIntoAccount() throws Exception {
+            HierarchicalConfiguration<ImmutableNode> configuration = ldapRepositoryConfiguration(ldapContainer);
+            configuration.addProperty("[@filter]", "(sn=nomatch)");
+
+            ReadOnlyUsersLDAPRepository usersLDAPRepository = new ReadOnlyUsersLDAPRepository(new SimpleDomainList());
+            usersLDAPRepository.configure(configuration);
+            usersLDAPRepository.init();
+
+            assertThat(usersLDAPRepository.countUsers()).isEqualTo(0);
+        }
+
+        @Test
+        void listShouldTakeFilterIntoAccount() throws Exception {
+            HierarchicalConfiguration<ImmutableNode> configuration = ldapRepositoryConfiguration(ldapContainer);
+            configuration.addProperty("[@filter]", "(sn=nomatch)");
+
+            ReadOnlyUsersLDAPRepository usersLDAPRepository = new ReadOnlyUsersLDAPRepository(new SimpleDomainList());
+            usersLDAPRepository.configure(configuration);
+            usersLDAPRepository.init();
+
+            assertThat(ImmutableList.copyOf(usersLDAPRepository.list())).isEmpty();
+        }
     }
 
     @Nested
@@ -95,6 +161,26 @@ class ReadOnlyUsersLDAPRepositoryTest {
         @Test
         void knownUserShouldBeAbleToLogInWhenPasswordIsCorrectWithVirtualHosting() throws Exception {
             assertThat(usersRepository.test(JAMES_USER_MAIL, PASSWORD)).isTrue();
+        }
+
+        @Test
+        void listShouldReturnExistingUsers() throws Exception {
+            assertThat(ImmutableList.copyOf(usersRepository.list())).containsOnly(JAMES_USER_MAIL);
+        }
+
+        @Test
+        void countUsersShouldReturnOne() throws Exception {
+            assertThat(usersRepository.countUsers()).isEqualTo(1);
+        }
+
+        @Test
+        void containsShouldReturnTrueWhenUserExists() throws Exception {
+            assertThat(usersRepository.contains(JAMES_USER_MAIL)).isTrue();
+        }
+
+        @Test
+        void containsShouldReturnFalseWhenUserDoesNotExists() throws Exception {
+            assertThat(usersRepository.contains(Username.of("unknown@" + DOMAIN))).isFalse();
         }
 
         @Test
@@ -169,6 +255,26 @@ class ReadOnlyUsersLDAPRepositoryTest {
         @Test
         void knownUserShouldBeAbleToLogInWhenPasswordIsCorrect() throws Exception {
             assertThat(usersRepository.test(JAMES_USER, PASSWORD)).isTrue();
+        }
+
+        @Test
+        void listShouldReturnExistingUsers() throws Exception {
+            assertThat(ImmutableList.copyOf(usersRepository.list())).containsOnly(JAMES_USER);
+        }
+
+        @Test
+        void countUsersShouldReturnOne() throws Exception {
+            assertThat(usersRepository.countUsers()).isEqualTo(1);
+        }
+
+        @Test
+        void containsShouldReturnTrueWhenUserExists() throws Exception {
+            assertThat(usersRepository.contains(JAMES_USER)).isTrue();
+        }
+
+        @Test
+        void containsShouldReturnFalseWhenUserDoesNotExists() throws Exception {
+            assertThat(usersRepository.contains(Username.of("unknown"))).isFalse();
         }
 
         @Test
@@ -284,12 +390,8 @@ class ReadOnlyUsersLDAPRepositoryTest {
         configuration.addProperty("[@ldapHost]", ldapContainer.getLdapHost());
         configuration.addProperty("[@principal]", "cn=admin,dc=james,dc=org");
         configuration.addProperty("[@credentials]", ADMIN_PASSWORD);
-        configuration.addProperty("[@userBase]", "ou=People,dc=james,dc=org");
+        configuration.addProperty("[@userBase]", "ou=people,dc=james,dc=org");
         configuration.addProperty("[@userObjectClass]", "inetOrgPerson");
-        configuration.addProperty("[@maxRetries]", "1");
-        configuration.addProperty("[@retryStartInterval]", "0");
-        configuration.addProperty("[@retryMaxInterval]", "2");
-        configuration.addProperty("[@retryIntervalScale]", "100");
         configuration.addProperty("[@connectionTimeout]", "100");
         configuration.addProperty("[@readTimeout]", "100");
         return configuration;

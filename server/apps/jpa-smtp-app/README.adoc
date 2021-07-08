@@ -1,0 +1,82 @@
+= Guice-JPA SMTP Server How-to
+
+This server target single node James deployments. By default, the derby database is used.
+
+This server acts as a Mail Transfer Agent and do not embed the mailbox component.
+
+== Requirements
+
+* Java 11 SDK
+
+== Running
+
+To run james, you have to create a directory containing required configuration files.
+
+James requires the configuration to be in a subfolder of working directory that is called
+**conf**. A [sample directory](https://github.com/apache/james-project/tree/master/server/container/guice/jpa-smtp/sample-configuration)
+is provided with some default values you may need to replace. You will need to update its content to match your needs.
+
+You also need to generate a keystore with the following command:
+
+[source]
+----
+$ keytool -genkey -alias james -keyalg RSA -keystore conf/keystore
+----
+
+Once everything is set up, you just have to run the jar with:
+
+[source]
+----
+$ java -javaagent:james-server-jpa-smtp-guice.lib/openjpa-3.1.2.jar -Dworking.directory=. -Dlogback.configurationFile=conf/logback.xml -jar james-server-jpa-smtp-app.jar
+----
+
+Note that binding ports below 1024 requires administrative rights.
+
+== Docker distribution
+
+To import the image locally:
+
+[source]
+----
+docker image load -i target/jib-image.tar
+----
+
+Then run it:
+
+[source]
+----
+docker run apache/james:jpa-smtp-latest
+----
+
+
+For security reasons you are required to generate your own keystore, that you can mount into the container via a volume:
+
+[source]
+----
+keytool -genkey -alias james -keyalg RSA -keystore keystore
+docker run -v $PWD/keystore:/root/conf/keystore docker run apache/james:jpa-smtp-latest
+----
+
+Use the [JAVA_TOOL_OPTIONS environment option](https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#jvm-flags)
+to pass extra JVM flags. For instance:
+
+[source]
+----
+docker run -e "JAVA_TOOL_OPTIONS=-Xmx500m -Xms500m" apache/james:jpa-smtp-latest
+----
+
+[Glowroot APM](https://glowroot.org/) is packaged as part of the docker distribution to easily enable valuable performances insights.
+Disabled by default, its java agent can easily be enabled:
+
+
+[source]
+----
+docker run -e "JAVA_TOOL_OPTIONS=-javaagent:/root/glowroot.jar" apache/james:jpa-smtp-latest
+----
+The [CLI](https://james.apache.org/server/manage-cli.html) can easily be used:
+
+
+[source]
+----
+docker exec CONTAINER-ID james-cli ListDomains
+----

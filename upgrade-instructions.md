@@ -17,6 +17,46 @@ Changes to apply between 3.5.x and 3.6.x will be reported here.
 Change list:
 
  - [Drop Cassandra schema version prior version 8](#drop-cassandra-schema-version-prior-version-8)
+ - [Adopt UnboundID as a LDAP library](#adopt-unboundid-as-a-ldap-library)
+ - [Review the architecture of the RabbitMQ event bus](#review-the-architecture-of-the-rabbitmq-event-bus)
+ 
+### Review the architecture of the RabbitMQ event bus
+
+Date 14/06/2021
+
+JIRA: https://issues.apache.org/jira/projects/JAMES/issues/JAMES-3599
+
+Impacted products: Distributed James server
+
+We now group listeners execution whenever possible. This minimizes:
+                                                    
+ - The count of events to deserialize (one for all groups)
+ - The count of ACKs to perform
+
+Note that retries are still performed on a per-group basis.
+
+One need, after a rolling upgrade to unbind group queues from the primary exchange. Group queues can be identified by
+their `mailboxEvent-workQueue-` prefix, and the primary exchange is named `mailboxEvent-exchange`. These operations can
+easily be performed via the rabbitMQ management web interface.
+ 
+### Adopt UnboundID as a LDAP library
+
+Date 09/06/2021
+
+JIRA: https://issues.apache.org/jira/browse/JAMES-3594
+
+The previous LDAP implementation was based on JNDI and was causing operational concerns by opening a connection
+for each user authentication. These limitations were inherent to JNDI thus to mitigate those we decided to migrate to
+a newer LDAP library: [UnboundID](https://ldap.com/unboundid-ldap-sdk-for-java/).
+
+As part of this migration the following change took place:
+
+ - `useConnectionPool` : Removed. UnboundId implementation relies on a pool by default.
+ - `poolSize` : Added. Allow controlling the count of connection in the pool.
+ - Retries had been removed. Invalid connections errors are retries. THe following parameters were removed:
+ `maxRetries`, `retryStartInterval`, `retryMaxInterval`, `retryIntervalScale`. Those values will be ignored.
+ 
+The "group restriction" feature should furthermore be considered experimental, its usage is discouraged.
 
 ### Drop Cassandra schema version prior version 8
 
