@@ -46,7 +46,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles RETR command
  */
-public class RetrCmdHandler implements CommandHandler<POP3Session> {
+public class RetrCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrCmdHandler.class);
     private static final Collection<String> COMMANDS = ImmutableSet.of("RETR");
     @VisibleForTesting

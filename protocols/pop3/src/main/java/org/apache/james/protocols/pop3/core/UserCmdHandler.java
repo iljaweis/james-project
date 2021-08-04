@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles USER command
  */
-public class UserCmdHandler implements CommandHandler<POP3Session>, CapaCapability {
+public class UserCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session>, CapaCapability {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserCmdHandler.class);
     private static final Collection<String> COMMANDS = ImmutableSet.of("USER");
     private static final Set<String> CAPS = ImmutableSet.of("USER");

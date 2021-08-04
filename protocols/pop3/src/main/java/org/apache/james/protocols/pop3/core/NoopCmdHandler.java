@@ -38,7 +38,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles NOOP command
  */
-public class NoopCmdHandler implements CommandHandler<POP3Session> {
+public class NoopCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NoopCmdHandler.class);
     private static final Collection<String> COMMANDS = ImmutableSet.of("NOOP");
 

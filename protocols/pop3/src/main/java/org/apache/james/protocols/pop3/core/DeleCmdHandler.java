@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles DELE command
  */
-public class DeleCmdHandler implements CommandHandler<POP3Session> {
+public class DeleCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
     private static final Collection<String> COMMANDS = ImmutableSet.of("DELE");
 
     private static final Response SYNTAX_ERROR = new POP3Response(POP3Response.ERR_RESPONSE, "Usage: DELE [mail number]").immutable();

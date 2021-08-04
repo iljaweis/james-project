@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * This handler is used to handle CAPA commands
  */
-public class CapaCmdHandler implements CommandHandler<POP3Session>, ExtensibleHandler, CapaCapability {    
+public class CapaCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session>, ExtensibleHandler, CapaCapability {    
     private List<CapaCapability> caps;
     private static final Collection<String> COMMANDS = ImmutableSet.of("CAPA");
     private static final Set<String> CAPS = ImmutableSet.of("PIPELINING");
