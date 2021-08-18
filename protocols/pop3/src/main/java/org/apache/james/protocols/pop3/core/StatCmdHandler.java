@@ -43,7 +43,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles STAT command
  */
-public class StatCmdHandler implements CommandHandler<POP3Session> {
+public class StatCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatCmdHandler.class);
     private static final Collection<String> COMMANDS = ImmutableSet.of("STAT");
 

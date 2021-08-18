@@ -43,7 +43,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles QUIT command
  */
-public class QuitCmdHandler implements CommandHandler<POP3Session> {
+public class QuitCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
     private static final Collection<String> COMMANDS = ImmutableSet.of("QUIT");
     private static final Logger LOGGER = LoggerFactory.getLogger(QuitCmdHandler.class);
     private static final Response SIGN_OFF;

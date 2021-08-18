@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles LIST command
  */
-public class ListCmdHandler implements CommandHandler<POP3Session> {
+public class ListCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
 
     private static final Collection<String> COMMANDS = ImmutableSet.of("LIST");
 

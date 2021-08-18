@@ -42,7 +42,7 @@ import com.google.common.collect.ImmutableSet;
  * Handler which offer STARTTLS implementation for POP3. STARTTLS is started
  * with the STSL command
  */
-public class StlsCmdHandler implements CommandHandler<POP3Session>, CapaCapability {
+public class StlsCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session>, CapaCapability {
     private static final Logger LOGGER = LoggerFactory.getLogger(StlsCmdHandler.class);
     private static final Collection<String> COMMANDS = ImmutableSet.of("STLS");
     private static final Set<String> CAPS = ImmutableSet.of("STLS");

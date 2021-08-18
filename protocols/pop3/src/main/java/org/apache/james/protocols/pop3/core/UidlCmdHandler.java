@@ -45,7 +45,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles UIDL command
  */
-public class UidlCmdHandler implements CommandHandler<POP3Session>, CapaCapability {
+public class UidlCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session>, CapaCapability {
     private static final Logger LOGGER = LoggerFactory.getLogger(UidlCmdHandler.class);
     private static final Collection<String> COMMANDS = ImmutableSet.of("UIDL");
     private static final Set<String> CAPS = ImmutableSet.of("UIDL");

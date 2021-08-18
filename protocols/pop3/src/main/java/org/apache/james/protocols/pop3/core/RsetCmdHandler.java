@@ -43,7 +43,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles RSET command
  */
-public class RsetCmdHandler implements CommandHandler<POP3Session> {
+public class RsetCmdHandler extends AbstractPOP3CommandHandler implements CommandHandler<POP3Session> {
     private static final Collection<String> COMMANDS = ImmutableSet.of("RSET");
     private static final Logger LOGGER = LoggerFactory.getLogger(RsetCmdHandler.class);
 
